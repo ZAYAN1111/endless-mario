@@ -1,5 +1,6 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+console.log("game.js loaded");
 
 // Mario setup
 let mario = {
