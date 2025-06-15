@@ -18,8 +18,8 @@ let mario = {
 let obstacles = [];
 
 function spawnObstacle() {
-    const height = 50 + Math.random() * 50;
-    const obstacle = {
+  const height = 50 + Math.random() * 50;
+  const obstacle = {
     x: canvas.width,
     y: canvas.height - height,
     width: 30,
@@ -31,13 +31,32 @@ function spawnObstacle() {
 
 // Handle jumping
 document.addEventListener("keydown", function (e) {
-  if (e.code === "Space" && !mario.isJumping) {
+  if (e.code === "Space" && !mario.isJumping && !isGameOver) {
     mario.ySpeed = mario.jumpPower;
     mario.isJumping = true;
   }
 });
 
+// Collision detection helper
+function isColliding(rect1, rect2) {
+  return (
+    rect1.x < rect2.x + rect2.width &&
+    rect1.x + rect1.width > rect2.x &&
+    rect1.y < rect2.y + rect2.height &&
+    rect1.y + rect1.height > rect2.y
+  );
+}
+
+let isGameOver = false;
+
+function gameOver() {
+  isGameOver = true;
+  alert("Game Over! Refresh the page to try again.");
+}
+
 function update() {
+  if (isGameOver) return;
+
   // Apply gravity
   mario.ySpeed += mario.gravity;
   mario.y += mario.ySpeed;
@@ -56,6 +75,14 @@ function update() {
 
   // Remove off-screen obstacles
   obstacles = obstacles.filter(ob => ob.x + ob.width > 0);
+
+  // Check collisions
+  for (let ob of obstacles) {
+    if (isColliding(mario, ob)) {
+      gameOver();
+      break;
+    }
+  }
 }
 
 function draw() {
@@ -70,12 +97,22 @@ function draw() {
   for (let ob of obstacles) {
     ctx.fillRect(ob.x, ob.y, ob.width, ob.height);
   }
+
+  // If game over, draw big GAME OVER text
+  if (isGameOver) {
+    ctx.fillStyle = "black";
+    ctx.font = "bold 72px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+  }
 }
 
 function gameLoop() {
   update();
   draw();
-  requestAnimationFrame(gameLoop);
+  if (!isGameOver) {
+    requestAnimationFrame(gameLoop);
+  }
 }
 
 // Start game
