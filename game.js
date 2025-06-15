@@ -26,7 +26,6 @@ function spawnObstacle() {
     speed: 5
   };
   obstacles.push(obstacle);
-  console.log("Obstacle spawned!");
 }
 
 // Handle jumping
@@ -80,4 +79,5 @@ function gameLoop() {
 
 // Start game
 setInterval(spawnObstacle, 2000);
+spawnObstacle();
 gameLoop();
