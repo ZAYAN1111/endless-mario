@@ -50,6 +50,7 @@ function isColliding(rect1, rect2) {
 let isGameOver = false;
 
 function gameOver() {
+  console.log("Game Over triggered");
   isGameOver = true;
   alert("Game Over! Refresh the page to try again.");
 }
@@ -98,7 +99,7 @@ function draw() {
     ctx.fillRect(ob.x, ob.y, ob.width, ob.height);
   }
 
-  // If game over, draw big GAME OVER text
+  // Draw GAME OVER text if game ended
   if (isGameOver) {
     ctx.fillStyle = "black";
     ctx.font = "bold 72px Arial";
@@ -108,7 +109,9 @@ function draw() {
 }
 
 function gameLoop() {
-  update();
+  if (!isGameOver) {
+    update();
+  }
   draw();
   if (!isGameOver) {
     requestAnimationFrame(gameLoop);
