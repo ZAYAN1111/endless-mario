@@ -17,8 +17,8 @@ let mario = {
 let obstacles = [];
 
 function spawnObstacle() {
-  const height = 50 + Math.random() * 50;
-  const obstacle = {
+    const height = 50 + Math.random() * 50;
+    const obstacle = {
     x: canvas.width,
     y: canvas.height - height,
     width: 30,
