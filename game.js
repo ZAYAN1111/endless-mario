@@ -26,6 +26,7 @@ function spawnObstacle() {
     speed: 5
   };
   obstacles.push(obstacle);
+  console.log("Obstacle spawned!");
 }
 
 // Handle jumping
