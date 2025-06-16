@@ -14,6 +14,9 @@ let mario = {
   isJumping: false
 };
 
+let isGameOver = false;
+let score = 0;
+
 // Obstacles array
 let obstacles = [];
 
@@ -24,12 +27,13 @@ function spawnObstacle() {
     y: canvas.height - height,
     width: 30,
     height: height,
-    speed: 5
+    speed: 5,
+    passed: false // for scoring
   };
   obstacles.push(obstacle);
 }
 
-// Handle jumping
+// Keyboard jump
 document.addEventListener("keydown", function (e) {
   if (e.code === "Space" && !mario.isJumping && !isGameOver) {
     mario.ySpeed = mario.jumpPower;
@@ -37,7 +41,15 @@ document.addEventListener("keydown", function (e) {
   }
 });
 
-// Collision detection helper
+// Mobile tap jump
+canvas.addEventListener("touchstart", function () {
+  if (!mario.isJumping && !isGameOver) {
+    mario.ySpeed = mario.jumpPower;
+    mario.isJumping = true;
+  }
+});
+
+// Collision detection
 function isColliding(rect1, rect2) {
   return (
     rect1.x < rect2.x + rect2.width &&
@@ -47,47 +59,50 @@ function isColliding(rect1, rect2) {
   );
 }
 
-let isGameOver = false;
-
 function gameOver() {
-  console.log("Game Over triggered");
   isGameOver = true;
-  alert("Game Over! Refresh the page to try again.");
+  alert("Game Over! Score: " + score + "\nRefresh the page to try again.");
 }
 
 function update() {
   if (isGameOver) return;
 
-  // Apply gravity
   mario.ySpeed += mario.gravity;
   mario.y += mario.ySpeed;
 
-  // Prevent falling through floor
   if (mario.y > 300) {
     mario.y = 300;
     mario.ySpeed = 0;
     mario.isJumping = false;
   }
 
-  // Move obstacles
-  for (let i = 0; i < obstacles.length; i++) {
-    obstacles[i].x -= obstacles[i].speed;
-  }
-
-  // Remove off-screen obstacles
-  obstacles = obstacles.filter(ob => ob.x + ob.width > 0);
-
-  // Check collisions
   for (let ob of obstacles) {
+    ob.x -= ob.speed;
+
+    if (!ob.passed && ob.x + ob.width < mario.x) {
+      ob.passed = true;
+      score++;
+    }
+
     if (isColliding(mario, ob)) {
       gameOver();
       break;
     }
   }
+
+  obstacles = obstacles.filter(ob => ob.x + ob.width > 0);
 }
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Sky background (optional)
+  ctx.fillStyle = "#5c94fc";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Brown ground
+  ctx.fillStyle = "#8B4513";
+  ctx.fillRect(0, 350, canvas.width, 50);
 
   // Draw Mario
   ctx.fillStyle = "red";
@@ -99,7 +114,13 @@ function draw() {
     ctx.fillRect(ob.x, ob.y, ob.width, ob.height);
   }
 
-  // Draw GAME OVER text if game ended
+  // Score
+  ctx.fillStyle = "white";
+  ctx.font = "24px Arial";
+  ctx.textAlign = "left";
+  ctx.fillText("Score: " + score, 20, 40);
+
+  // Game over text
   if (isGameOver) {
     ctx.fillStyle = "black";
     ctx.font = "bold 72px Arial";
