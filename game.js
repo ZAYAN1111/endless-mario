@@ -1,5 +1,7 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+const jumpButton = document.getElementById("jumpButton");
+const replayButton = document.getElementById("replayButton");
 console.log("game.js loaded");
 
 // Mario setup
@@ -16,6 +18,7 @@ let mario = {
 
 let isGameOver = false;
 let score = 0;
+let highScore = parseInt(localStorage.getItem("highScore")) || 0;
 
 // Obstacles array
 let obstacles = [];
@@ -41,12 +44,24 @@ document.addEventListener("keydown", function (e) {
   }
 });
 
-// Mobile tap jump
-canvas.addEventListener("touchstart", function () {
+// Jump button click
+jumpButton.addEventListener("click", () => {
   if (!mario.isJumping && !isGameOver) {
     mario.ySpeed = mario.jumpPower;
     mario.isJumping = true;
   }
+});
+jumpButton.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  if (!mario.isJumping && !isGameOver) {
+    mario.ySpeed = mario.jumpPower;
+    mario.isJumping = true;
+  }
+});
+
+// Replay button
+replayButton.addEventListener("click", () => {
+  location.reload(); // Quick refresh to restart everything
 });
 
 // Collision detection
@@ -61,7 +76,12 @@ function isColliding(rect1, rect2) {
 
 function gameOver() {
   isGameOver = true;
-  alert("Game Over! Score: " + score + "\nRefresh the page to try again.");
+  replayButton.style.display = "inline-block";
+  if (score > highScore) {
+    highScore = score;
+    localStorage.setItem("highScore", highScore);
+  }
+  alert("Game Over! Score: " + score + "\nHigh Score: " + highScore);
 }
 
 function update() {
@@ -96,7 +116,7 @@ function update() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Sky background (optional)
+  // Sky background
   ctx.fillStyle = "#5c94fc";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -119,6 +139,7 @@ function draw() {
   ctx.font = "24px Arial";
   ctx.textAlign = "left";
   ctx.fillText("Score: " + score, 20, 40);
+  ctx.fillText("High Score: " + highScore, 20, 70);
 
   // Game over text
   if (isGameOver) {
@@ -132,10 +153,10 @@ function draw() {
 function gameLoop() {
   if (!isGameOver) {
     update();
-  }
-  draw();
-  if (!isGameOver) {
+    draw();
     requestAnimationFrame(gameLoop);
+  } else {
+    draw();
   }
 }
 
