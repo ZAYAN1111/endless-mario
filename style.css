@@ -16,3 +16,24 @@ canvas {
   border: 4px solid #000;
   background: #5c94fc;
 }
+#controls {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+#jumpButton, #replayButton {
+  padding: 16px 32px;
+  font-size: 18px;
+  background-color: #FFA500;
+  border: 3px solid #000;
+  border-radius: 8px;
+  font-family: 'Press Start 2P', sans-serif;
+  cursor: pointer;
+}
+
+#jumpButton:hover,
+#replayButton:hover {
+  background-color: #FF8C00;
+}
